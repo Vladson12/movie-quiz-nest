@@ -5,7 +5,7 @@ import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 export class User {
   @PrimaryGeneratedColumn('uuid')
   id: string;
-  @Column('varchar')
+  @Column('varchar', { unique: true })
   login: string;
   @Exclude()
   @Column('varchar')
