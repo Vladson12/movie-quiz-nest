@@ -30,11 +30,6 @@ export class MovieService {
         const movieResponse = await axios.get(
           `${process.env.MOVIE_API_MOVIE_ENDPOINT}/${randomMovie.theMovieDbId}?language=${language}`,
           {
-            proxy: {
-              host: process.env.PROXY_HOST,
-              port: +process.env.PROXY_PORT,
-              protocol: process.env.PROXY_PROTOCOL,
-            },
             headers: { Authorization: `Bearer ${process.env.MOVIE_API_KEY}` },
           },
         );
@@ -47,11 +42,6 @@ export class MovieService {
         const imagesResponse = await axios.get(
           `${process.env.MOVIE_API_MOVIE_ENDPOINT}/${movieData.id}/images`,
           {
-            proxy: {
-              host: process.env.PROXY_HOST,
-              port: +process.env.PROXY_PORT,
-              protocol: process.env.PROXY_PROTOCOL,
-            },
             headers: { Authorization: `Bearer ${process.env.MOVIE_API_KEY}` },
           },
         );
