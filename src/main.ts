@@ -13,7 +13,7 @@ async function bootstrap() {
     }),
   );
   app.enableCors();
-  await app.listen(process.env.PORT || 3000);
+  await app.listen(+process.env.PORT || 3000);
 
   types.setTypeParser(
     types.builtins.INT8,

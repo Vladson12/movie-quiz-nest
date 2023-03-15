@@ -73,6 +73,7 @@ export class AuthService {
     await this.verify(token);
 
     const decodedToken = this.jwtService.decode(token);
+
     const foundUser = await this.usersRepository.findOne({
       where: { id: decodedToken['userId'] },
     });
@@ -82,7 +83,7 @@ export class AuthService {
     }
 
     if (foundUser.refreshToken !== token) {
-      throw new ForbiddenException('Token invalid or expired');
+      throw new UnauthorizedException('Token invalidated');
     }
 
     const tokens = await this.getTokenPair({
@@ -116,9 +117,10 @@ export class AuthService {
     try {
       return this.jwtService.verifyAsync(token, {
         secret: process.env.JWT_SECRET_REFRESH_KEY,
+        ignoreExpiration: false,
       });
     } catch (error) {
-      throw new UnauthorizedException('Token invalid');
+      throw new UnauthorizedException('Token invalid or expired');
     }
   }
 }
