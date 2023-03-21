@@ -12,6 +12,7 @@ import { Repository } from 'typeorm';
 import { TokenPayload, Tokens } from './types/token.interface';
 import { JwtService } from '@nestjs/jwt';
 import { compare, hash } from 'bcrypt';
+import { Role } from 'src/user/entities/roles';
 
 @Injectable()
 export class AuthService {
@@ -33,6 +34,7 @@ export class AuthService {
     const userToCreate = new User({
       ...createUserDto,
       password: await hash(createUserDto.password, +process.env.CRYPT_SALT),
+      role: Role.PLAYER,
       createdAt: currentTimestamp,
       updatedAt: currentTimestamp,
     });
@@ -54,12 +56,13 @@ export class AuthService {
     );
 
     if (!isPasswordCorrect) {
-      throw new ForbiddenException('Wrong password');
+      throw new ForbiddenException('Wrong credentials');
     }
 
     const tokens = await this.getTokenPair({
       userId: foundUser.id,
       login: foundUser.login,
+      role: foundUser.role,
     });
 
     this.usersRepository.update(foundUser.id, {
@@ -89,6 +92,7 @@ export class AuthService {
     const tokens = await this.getTokenPair({
       userId: foundUser.id,
       login: foundUser.login,
+      role: foundUser.role,
     });
 
     this.usersRepository.update(foundUser.id, {

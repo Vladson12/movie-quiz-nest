@@ -1,5 +1,6 @@
 import { Exclude } from 'class-transformer';
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Role } from './roles';
 
 @Entity()
 export class User {
@@ -12,6 +13,9 @@ export class User {
   @Exclude()
   @Column('varchar')
   password: string;
+
+  @Column('varchar')
+  role: Role;
 
   @Column('bigint')
   readonly createdAt: number;
