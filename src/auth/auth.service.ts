@@ -66,7 +66,7 @@ export class AuthService {
     });
 
     this.usersRepository.update(foundUser.id, {
-      refreshToken: tokens.refreshToken,
+      refreshToken: await hash(tokens.refreshToken, +process.env.CRYPT_SALT),
     });
 
     return tokens;
@@ -85,7 +85,10 @@ export class AuthService {
       throw new NotFoundException('User not found');
     }
 
-    if (foundUser.refreshToken !== token) {
+    if (
+      !foundUser.refreshToken ||
+      !(await compare(token, foundUser.refreshToken))
+    ) {
       throw new UnauthorizedException('Token invalidated');
     }
 
