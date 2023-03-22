@@ -5,7 +5,6 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/user/entities/user.entity';
 import { Repository } from 'typeorm';
@@ -13,6 +12,7 @@ import { TokenPayload, Tokens } from './types/token.interface';
 import { JwtService } from '@nestjs/jwt';
 import { compare, hash } from 'bcrypt';
 import { Role } from 'src/user/entities/roles';
+import { AuthDto } from './dto/auth.dto';
 
 @Injectable()
 export class AuthService {
@@ -22,9 +22,9 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async register(createUserDto: CreateUserDto) {
+  async register(authDto: AuthDto) {
     const foundUser = await this.usersRepository.findOne({
-      where: { login: createUserDto.login },
+      where: { login: authDto.login },
     });
     if (foundUser) {
       throw new BadRequestException('User with such login already exists');
@@ -32,8 +32,8 @@ export class AuthService {
 
     const currentTimestamp = Date.now();
     const userToCreate = new User({
-      ...createUserDto,
-      password: await hash(createUserDto.password, +process.env.CRYPT_SALT),
+      ...authDto,
+      password: await hash(authDto.password, +process.env.CRYPT_SALT),
       role: Role.PLAYER,
       createdAt: currentTimestamp,
       updatedAt: currentTimestamp,
@@ -43,15 +43,15 @@ export class AuthService {
     return this.usersRepository.save(createdUser);
   }
 
-  async login(createUserDto: CreateUserDto): Promise<Tokens> {
+  async login(authDto: AuthDto): Promise<Tokens> {
     const foundUser = await this.usersRepository.findOne({
-      where: { login: createUserDto.login },
+      where: { login: authDto.login },
     });
     if (!foundUser) {
       throw new ForbiddenException("User with such login doesn't exist");
     }
     const isPasswordCorrect = await compare(
-      createUserDto.password,
+      authDto.password,
       foundUser.password,
     );
 
