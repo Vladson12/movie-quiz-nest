@@ -14,7 +14,7 @@ import {
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
-import { JwtGuard } from 'src/auth/guards/jwt.guard';
+import { JwtAccessGuard } from 'src/auth/guards/jwt-access.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { Role } from './entities/roles';
 import { Roles } from 'src/decorators/roles.decorator';
@@ -24,28 +24,28 @@ import { Roles } from 'src/decorators/roles.decorator';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @UseGuards(JwtGuard, RolesGuard)
+  @UseGuards(JwtAccessGuard, RolesGuard)
   @Roles(Role.ADMIN)
   @Post()
   async create(@Body() createUserDto: CreateUserDto) {
     return this.userService.create(createUserDto);
   }
 
-  @UseGuards(JwtGuard, RolesGuard)
+  @UseGuards(JwtAccessGuard, RolesGuard)
   @Roles(Role.ADMIN)
   @Get()
   async findAll() {
     return this.userService.findAll();
   }
 
-  @UseGuards(JwtGuard, RolesGuard)
+  @UseGuards(JwtAccessGuard, RolesGuard)
   @Roles(Role.ADMIN)
   @Get(':id')
   async findOne(@Param('id', ParseUUIDPipe) id: string) {
     return this.userService.findOne(id);
   }
 
-  @UseGuards(JwtGuard, RolesGuard)
+  @UseGuards(JwtAccessGuard, RolesGuard)
   @Roles(Role.ADMIN)
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)

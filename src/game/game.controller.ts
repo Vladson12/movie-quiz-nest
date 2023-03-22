@@ -12,7 +12,7 @@ import {
 } from '@nestjs/common';
 import { GameService } from './game.service';
 import { CreateGameDto } from './dto/create-game.dto';
-import { JwtGuard } from 'src/auth/guards/jwt.guard';
+import { JwtAccessGuard } from 'src/auth/guards/jwt-access.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { Roles } from 'src/decorators/roles.decorator';
 import { Role } from 'src/user/entities/roles';
@@ -22,27 +22,30 @@ export class GameController {
   constructor(private readonly gameService: GameService) {}
 
   @Post()
-  @UseGuards(JwtGuard, RolesGuard)
+  @HttpCode(HttpStatus.CREATED)
+  @UseGuards(JwtAccessGuard, RolesGuard)
   @Roles(Role.PLAYER)
   async create(@Body() createGameDto: CreateGameDto) {
     return this.gameService.create(createGameDto);
   }
 
   @Get()
-  @UseGuards(JwtGuard)
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(JwtAccessGuard)
   async findAll() {
     return this.gameService.findAll();
   }
 
   @Get(':id')
-  @UseGuards(JwtGuard)
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(JwtAccessGuard)
   async findOne(@Param('id', ParseUUIDPipe) id: string) {
     return this.gameService.findOne(id);
   }
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  @UseGuards(JwtGuard, RolesGuard)
+  @UseGuards(JwtAccessGuard, RolesGuard)
   @Roles(Role.ADMIN)
   async remove(@Param('id', ParseUUIDPipe) id: string) {
     return this.gameService.remove(id);

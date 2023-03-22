@@ -1,13 +1,21 @@
-import { Controller, Get, Query, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { MovieService } from './movie.service';
-import { JwtGuard } from 'src/auth/guards/jwt.guard';
+import { JwtAccessGuard } from 'src/auth/guards/jwt-access.guard';
 
 @Controller('movie')
-@UseGuards(JwtGuard)
+@UseGuards(JwtAccessGuard)
 export class MovieController {
   constructor(private readonly movieService: MovieService) {}
 
   @Get('random')
+  @HttpCode(HttpStatus.OK)
   async getRandomMovies(
     @Query('quantity') quantity: number,
     @Query('language') language: string,

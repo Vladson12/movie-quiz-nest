@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/user/entities/user.entity';
-import { Repository } from 'typeorm';
+import { IsNull, Not, Repository } from 'typeorm';
 import { TokenPayload, Tokens } from './types/token.interface';
 import { JwtService } from '@nestjs/jwt';
 import { compare, hash } from 'bcrypt';
@@ -72,13 +72,9 @@ export class AuthService {
     return tokens;
   }
 
-  async refresh(token: string) {
-    await this.verify(token);
-
-    const decodedToken = this.jwtService.decode(token);
-
+  async refresh(userId: string, token: string) {
     const foundUser = await this.usersRepository.findOne({
-      where: { id: decodedToken['userId'] },
+      where: { id: userId },
     });
 
     if (!foundUser) {
@@ -103,6 +99,13 @@ export class AuthService {
     });
 
     return tokens;
+  }
+
+  async logout(userId: string) {
+    this.usersRepository.update(
+      { id: userId, refreshToken: Not(IsNull()) },
+      { refreshToken: null },
+    );
   }
 
   private async getTokenPair(payload: TokenPayload): Promise<Tokens> {
