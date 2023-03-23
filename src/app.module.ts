@@ -6,6 +6,8 @@ import { dataSourceOptions } from './db/data-source';
 import { MovieModule } from './movie/movie.module';
 import { AuthModule } from './auth/auth.module';
 import { GameModule } from './game/game.module';
+import { JwtAccessGuard } from './auth/guards/jwt-access.guard';
+import { APP_GUARD } from '@nestjs/core';
 
 @Module({
   imports: [
@@ -15,6 +17,12 @@ import { GameModule } from './game/game.module';
     MovieModule,
     AuthModule,
     GameModule,
+  ],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: JwtAccessGuard,
+    },
   ],
 })
 export class AppModule {}
