@@ -8,7 +8,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/user/entities/user.entity';
 import { IsNull, Not, Repository } from 'typeorm';
-import { TokenPayload, Tokens } from './types/token.interface';
+import { LoginResponse, TokenPayload, Tokens } from './types/token.interface';
 import { JwtService } from '@nestjs/jwt';
 import { compare, hash } from 'bcrypt';
 import { Role } from 'src/user/entities/roles';
@@ -43,7 +43,7 @@ export class AuthService {
     return this.usersRepository.save(createdUser);
   }
 
-  async login(authDto: AuthDto): Promise<Tokens> {
+  async login(authDto: AuthDto): Promise<LoginResponse> {
     const foundUser = await this.usersRepository.findOne({
       where: { login: authDto.login },
     });
@@ -69,10 +69,10 @@ export class AuthService {
       refreshToken: await hash(tokens.refreshToken, +process.env.CRYPT_SALT),
     });
 
-    return tokens;
+    return { ...tokens, role: foundUser.role };
   }
 
-  async refresh(userId: string, token: string) {
+  async refresh(userId: string, token: string): Promise<LoginResponse> {
     const foundUser = await this.usersRepository.findOne({
       where: { id: userId },
     });
@@ -98,7 +98,7 @@ export class AuthService {
       refreshToken: tokens.refreshToken,
     });
 
-    return tokens;
+    return { ...tokens, role: foundUser.role };
   }
 
   async logout(userId: string) {

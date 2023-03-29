@@ -10,3 +10,9 @@ export interface TokenPayload {
   login: string;
   role: Role;
 }
+
+export interface LoginResponse {
+  accessToken: string;
+  refreshToken: string;
+  role: Role;
+}
