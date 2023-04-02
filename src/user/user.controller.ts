@@ -17,6 +17,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { Role } from './entities/roles';
 import { Roles } from 'src/decorators/roles.decorator';
+import { GetCurrentUserField } from 'src/decorators/get-current-user-decorator';
 
 @Controller('user')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -30,13 +31,19 @@ export class UserController {
     return this.userService.create(createUserDto);
   }
 
+  @Get('/me')
+  @Roles(Role.ADMIN, Role.PLAYER)
+  async me(@GetCurrentUserField('userId') userId: string) {
+    return this.userService.findOne(userId);
+  }
+
   @Roles(Role.ADMIN)
   @Get()
   async findAll() {
     return this.userService.findAll();
   }
 
-  @Roles(Role.ADMIN)
+  @Roles(Role.ADMIN, Role.PLAYER)
   @Get(':id')
   async findOne(@Param('id', ParseUUIDPipe) id: string) {
     return this.userService.findOne(id);

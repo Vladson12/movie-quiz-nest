@@ -36,6 +36,10 @@ export class UserService {
     return this.usersRepository.save(createdUser);
   }
 
+  async findMe() {
+    return null;
+  }
+
   async findAll() {
     return this.usersRepository.find();
   }
