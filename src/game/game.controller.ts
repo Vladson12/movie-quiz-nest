@@ -15,6 +15,7 @@ import { CreateGameDto } from './dto/create-game.dto';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { Roles } from 'src/decorators/roles.decorator';
 import { Role } from 'src/user/entities/roles';
+import { GetCurrentUserField } from 'src/decorators/get-current-user-decorator';
 
 @Controller('game')
 export class GameController {
@@ -24,8 +25,11 @@ export class GameController {
   @HttpCode(HttpStatus.CREATED)
   @UseGuards(RolesGuard)
   @Roles(Role.PLAYER)
-  async create(@Body() createGameDto: CreateGameDto) {
-    return this.gameService.create(createGameDto);
+  async create(
+    @Body() createGameDto: CreateGameDto,
+    @GetCurrentUserField('userId') playerId: string,
+  ) {
+    return this.gameService.create(createGameDto, playerId);
   }
 
   @Get()

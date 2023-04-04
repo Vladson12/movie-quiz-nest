@@ -11,14 +11,14 @@ export class GameService {
     private gamesRepository: Repository<Game>,
   ) {}
 
-  async create(createGameDto: CreateGameDto) {
+  async create(createGameDto: CreateGameDto, playerId: string) {
     const gameToCreate = new Game({
       ...createGameDto,
-      player: createGameDto.playerId,
+      player: playerId,
     });
 
-    const createdUser = this.gamesRepository.create(gameToCreate);
-    return this.gamesRepository.save(createdUser);
+    const createdGame = this.gamesRepository.create(gameToCreate);
+    return this.gamesRepository.save(createdGame);
   }
 
   async findAll() {
